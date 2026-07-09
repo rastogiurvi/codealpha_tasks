@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TaskFlow – Project Management Tool</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+
+<header id="app-header" class="app-header hidden">
+  <div class="header-left">
+    <span class="logo">📋 TaskFlow</span>
+  </div>
+  <div class="header-right">
+    <span id="user-name" class="user-name"></span>
+    <button id="logout-btn" class="btn btn-ghost">Logout</button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- AUTH VIEW -->
+  <section id="auth-view" class="auth-view">
+    <div class="auth-card">
+      <h1>📋 TaskFlow</h1>
+      <p class="subtitle">Organize projects, assign tasks, and collaborate in real time.</p>
+
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="login">Login</button>
+        <button class="tab-btn" data-tab="register">Register</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <input type="email" id="login-email" placeholder="Email" required autocomplete="email" />
+        <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" />
+        <button type="submit" class="btn btn-primary">Login</button>
+        <p class="form-error" id="login-error"></p>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <input type="text" id="register-name" placeholder="Full name" required />
+        <input type="email" id="register-email" placeholder="Email" required autocomplete="email" />
+        <input type="password" id="register-password" placeholder="Password (min 6 chars)" required autocomplete="new-password" />
+        <button type="submit" class="btn btn-primary">Create account</button>
+        <p class="form-error" id="register-error"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- DASHBOARD VIEW -->
+  <section id="dashboard-view" class="dashboard-view hidden">
+    <div class="dashboard-header">
+      <h2>Your Projects</h2>
+      <button id="new-project-btn" class="btn btn-primary">+ New Project</button>
+    </div>
+    <div id="projects-grid" class="projects-grid"></div>
+    <p id="no-projects" class="empty-state hidden">No projects yet — create your first one!</p>
+  </section>
+
+  <!-- BOARD VIEW -->
+  <section id="board-view" class="board-view hidden">
+    <div class="board-header">
+      <button id="back-to-dashboard" class="btn btn-ghost">← Back</button>
+      <h2 id="board-title"></h2>
+      <div class="board-actions">
+        <button id="members-btn" class="btn btn-ghost">👥 Members</button>
+        <button id="add-task-btn" class="btn btn-primary">+ Add Task</button>
+      </div>
+    </div>
+    <div class="board-columns">
+      <div class="column" data-status="todo">
+        <h3>To Do <span class="count" id="count-todo">0</span></h3>
+        <div class="card-list" id="list-todo"></div>
+      </div>
+      <div class="column" data-status="in_progress">
+        <h3>In Progress <span class="count" id="count-in_progress">0</span></h3>
+        <div class="card-list" id="list-in_progress"></div>
+      </div>
+      <div class="column" data-status="done">
+        <h3>Done <span class="count" id="count-done">0</span></h3>
+        <div class="card-list" id="list-done"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- New Project Modal -->
+<div id="project-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>New Project</h3>
+    <input type="text" id="project-name" placeholder="Project name" />
+    <textarea id="project-desc" placeholder="Description (optional)"></textarea>
+    <p class="form-error" id="project-error"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close-modal="project-modal">Cancel</button>
+      <button id="create-project-confirm" class="btn btn-primary">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- Members Modal -->
+<div id="members-modal" class="modal hidden">
+  <div class="modal-content">
+    <h3>Project Members</h3>
+    <div id="members-list" class="members-list"></div>
+    <div class="invite-row">
+      <input type="email" id="invite-email" placeholder="Invite by email" />
+      <button id="invite-confirm" class="btn btn-primary">Invite</button>
+    </div>
+    <p class="form-error" id="invite-error"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close-modal="members-modal">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div id="task-modal" class="modal hidden">
+  <div class="modal-content task-modal-content">
+    <h3 id="task-modal-title">New Task</h3>
+    <input type="text" id="task-title" placeholder="Task title" />
+    <textarea id="task-desc" placeholder="Description"></textarea>
+    <div class="task-meta-row">
+      <label>Status
+        <select id="task-status">
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+      </label>
+      <label>Assignee
+        <select id="task-assignee"><option value="">Unassigned</option></select>
+      </label>
+      <label>Due date
+        <input type="date" id="task-due" />
+      </label>
+    </div>
+    <p class="form-error" id="task-error"></p>
+    <div class="modal-actions">
+      <button class="btn btn-danger hidden" id="delete-task-btn">Delete</button>
+      <button class="btn btn-ghost" data-close-modal="task-modal">Cancel</button>
+      <button id="save-task-btn" class="btn btn-primary">Save Task</button>
+    </div>
+
+    <div id="comments-section" class="comments-section hidden">
+      <h4>Comments</h4>
+      <div id="comments-list" class="comments-list"></div>
+      <div class="comment-input-row">
+        <input type="text" id="comment-input" placeholder="Write a comment..." />
+        <button id="comment-send-btn" class="btn btn-primary">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

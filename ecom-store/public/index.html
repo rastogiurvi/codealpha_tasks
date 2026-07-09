@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ShopWave – Shop Smarter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div id="toast-container" class="toast-container"></div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-left" id="logo-home">
+      <span class="logo-mark">🛍️</span><span class="logo-text">ShopWave</span>
+    </div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="search-input" placeholder="Search for products, brands and more..." />
+    </div>
+    <nav class="header-right">
+      <button id="theme-toggle" class="icon-btn" title="Toggle dark mode">🌙</button>
+      <button id="nav-wishlist-btn" class="icon-btn hidden" title="Wishlist">
+        ♡ <span id="wishlist-count" class="badge-count hidden">0</span>
+      </button>
+      <button id="nav-orders-btn" class="btn btn-ghost hidden">Orders</button>
+      <button id="nav-admin-btn" class="btn btn-ghost hidden">Admin</button>
+      <button id="nav-cart-btn" class="btn btn-ghost">
+        🛒 Cart <span id="cart-count" class="badge-count hidden">0</span>
+      </button>
+      <div class="user-menu-wrap hidden" id="user-menu-wrap">
+        <button id="user-menu-btn" class="user-chip"><span id="user-initial"></span></button>
+        <div id="user-menu-dropdown" class="user-dropdown hidden">
+          <div class="user-dropdown-name" id="dropdown-name"></div>
+          <div class="user-dropdown-email" id="dropdown-email"></div>
+          <button id="nav-profile-btn" class="dropdown-item">👤 My Profile</button>
+          <button id="logout-btn" class="dropdown-item dropdown-danger">🚪 Logout</button>
+        </div>
+      </div>
+      <button id="login-btn" class="btn btn-primary">Login</button>
+    </nav>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- PRODUCT LIST VIEW -->
+  <section id="products-view" class="view">
+    <div class="hero">
+      <div class="hero-text">
+        <span class="hero-eyebrow">NEW SEASON ARRIVALS</span>
+        <h1>Everything you need,<br/>delivered with care.</h1>
+        <p>Curated electronics, fashion, home &amp; fitness essentials — at prices that make sense.</p>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="category-bar" id="category-bar"></div>
+      <select id="sort-select" class="sort-select">
+        <option value="newest">Newest first</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="rating">Top Rated</option>
+      </select>
+    </div>
+
+    <div id="products-grid" class="products-grid"></div>
+    <p id="no-products" class="empty-state hidden">😕 No products found. Try a different search or category.</p>
+    <div id="pagination-bar" class="pagination-bar"></div>
+  </section>
+
+  <!-- PRODUCT DETAIL VIEW -->
+  <section id="product-detail-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Back to products</button>
+    <div id="product-detail-content" class="product-detail"></div>
+    <div id="reviews-section" class="reviews-section"></div>
+  </section>
+
+  <!-- CART VIEW -->
+  <section id="cart-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Continue shopping</button>
+    <h2>Your Cart</h2>
+    <div id="cart-content"></div>
+  </section>
+
+  <!-- WISHLIST VIEW -->
+  <section id="wishlist-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Continue shopping</button>
+    <h2>Your Wishlist</h2>
+    <div id="wishlist-grid" class="products-grid"></div>
+    <p id="no-wishlist" class="empty-state hidden">🤍 Your wishlist is empty. Tap the heart on any product to save it here.</p>
+  </section>
+
+  <!-- CHECKOUT VIEW -->
+  <section id="checkout-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="cart-view">← Back to cart</button>
+    <h2>Checkout</h2>
+    <div class="checkout-layout">
+      <div class="checkout-form-box">
+        <label>Shipping Address</label>
+        <textarea id="shipping-address" placeholder="Full name, street address, city, state, PIN code"></textarea>
+
+        <label style="margin-top:16px;">Coupon Code</label>
+        <div class="coupon-row">
+          <input type="text" id="coupon-input" placeholder="e.g. WELCOME10" />
+          <button id="apply-coupon-btn" class="btn btn-ghost">Apply</button>
+        </div>
+        <p class="coupon-msg" id="coupon-msg"></p>
+
+        <p class="form-error" id="checkout-error"></p>
+        <button id="place-order-btn" class="btn btn-primary btn-block">Place Order</button>
+      </div>
+      <div id="checkout-summary" class="checkout-summary"></div>
+    </div>
+  </section>
+
+  <!-- ORDER CONFIRMATION VIEW -->
+  <section id="order-confirmation-view" class="view hidden">
+    <div class="confirmation-box">
+      <div class="confirmation-icon">✅</div>
+      <h2>Order Placed!</h2>
+      <p id="confirmation-text"></p>
+      <button class="btn btn-primary" data-back="products-view">Continue Shopping</button>
+    </div>
+  </section>
+
+  <!-- ORDERS HISTORY VIEW -->
+  <section id="orders-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Back to products</button>
+    <h2>My Orders</h2>
+    <div id="orders-list"></div>
+    <p id="no-orders" class="empty-state hidden">📦 You haven't placed any orders yet.</p>
+  </section>
+
+  <!-- PROFILE VIEW -->
+  <section id="profile-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Back to products</button>
+    <h2>My Profile</h2>
+    <div class="profile-layout">
+      <div class="profile-card">
+        <div class="profile-avatar" id="profile-avatar"></div>
+        <div>
+          <div class="profile-name" id="profile-name"></div>
+          <div class="profile-email" id="profile-email"></div>
+        </div>
+      </div>
+      <div class="profile-card">
+        <h3>Change Password</h3>
+        <label>Current Password</label>
+        <input type="password" id="current-password" />
+        <label style="margin-top:12px;">New Password</label>
+        <input type="password" id="new-password" />
+        <p class="form-error" id="password-error"></p>
+        <p class="form-success" id="password-success"></p>
+        <button id="change-password-btn" class="btn btn-primary" style="margin-top:14px;">Update Password</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ADMIN VIEW -->
+  <section id="admin-view" class="view hidden">
+    <button class="btn btn-ghost back-btn" data-back="products-view">← Back to products</button>
+    <h2>Admin Dashboard</h2>
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-admin-tab="admin-products-tab">Products</button>
+      <button class="admin-tab-btn" data-admin-tab="admin-orders-tab">Orders</button>
+    </div>
+
+    <div id="admin-products-tab" class="admin-tab-content">
+      <button id="new-product-btn" class="btn btn-primary" style="margin-bottom:16px;">+ Add Product</button>
+      <div id="admin-products-list" class="admin-table"></div>
+    </div>
+
+    <div id="admin-orders-tab" class="admin-tab-content hidden">
+      <div id="admin-orders-list" class="admin-table"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Login/Register Modal -->
+<div id="auth-modal" class="modal hidden">
+  <div class="modal-content auth-modal-content">
+    <button class="modal-close" data-close-modal="auth-modal">×</button>
+    <div class="auth-modal-logo">🛍️ ShopWave</div>
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="login">Login</button>
+      <button class="tab-btn" data-tab="register">Register</button>
+    </div>
+    <form id="login-form" class="auth-form">
+      <input type="email" id="login-email" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="login-password" placeholder="Password" required autocomplete="current-password" />
+      <button type="submit" class="btn btn-primary btn-block">Login</button>
+      <p class="form-error" id="login-error"></p>
+      <p class="auth-hint">Demo admin: admin@shopwave.com / admin123</p>
+    </form>
+    <form id="register-form" class="auth-form hidden">
+      <input type="text" id="register-name" placeholder="Full name" required />
+      <input type="email" id="register-email" placeholder="Email" required autocomplete="email" />
+      <input type="password" id="register-password" placeholder="Password (min 6 chars)" required autocomplete="new-password" />
+      <button type="submit" class="btn btn-primary btn-block">Create account</button>
+      <p class="form-error" id="register-error"></p>
+    </form>
+  </div>
+</div>
+
+<!-- Admin: Add/Edit Product Modal -->
+<div id="product-modal" class="modal hidden">
+  <div class="modal-content">
+    <button class="modal-close" data-close-modal="product-modal">×</button>
+    <h3 id="product-modal-title">Add Product</h3>
+    <label>Name</label>
+    <input type="text" id="pm-name" />
+    <label style="margin-top:10px;">Description</label>
+    <textarea id="pm-description"></textarea>
+    <div class="pm-grid">
+      <div>
+        <label>Price (₹)</label>
+        <input type="number" id="pm-price" min="0" />
+      </div>
+      <div>
+        <label>Stock</label>
+        <input type="number" id="pm-stock" min="0" />
+      </div>
+    </div>
+    <label style="margin-top:10px;">Category</label>
+    <input type="text" id="pm-category" />
+    <label style="margin-top:10px;">Image URL</label>
+    <input type="text" id="pm-image" placeholder="https://..." />
+    <p class="form-error" id="product-modal-error"></p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" data-close-modal="product-modal">Cancel</button>
+      <button id="product-modal-save" class="btn btn-primary">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
